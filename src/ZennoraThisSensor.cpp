@@ -44,26 +44,22 @@ InitializationThisSensorStatus ZennoraThisSensor::begin() {
     //the wire init is handled in the ZedSwitch class but moving the inits here to make the core functuonalities resuable
 
     zedSwitch.switchesStatus.switches = switchesInit();
-    //delay(5000);
+    delay(5000);
     zedSwitch.switchesStatus.inasInit = inaInit();
 
     //set the uart pins to use
     uartPins();
     //initialize the uart pins
-    //sensor.coreSensorStatus.uartStatus = uartInit();
+    sensor.coreSensorStatus.uartStatus = uartInit();
    
     // Go through the switches and MOSFETs/relays
     for (int i = 0; i < zedSwitch.switchesStatus.switches.switches.size(); i++) {
-        //this could be used to initialize the ina219s
-        //switchesStatus.ina219ensors.push_back(Adafruit_INA219(switchesStatus.switches.switches[i].address));
         
-        //if(!switchesStatus.ina219ensors[i].begin()){
-        //    Serial.println("Failed to initialize INA219");
-
-
-
-        //}
-        //delay(100);
+        //delay(100);]
+        Serial.print("Switch: ");
+        Serial.println(zedSwitch.switchesStatus.switches.switches[i].name.c_str());
+        Serial.print("Pin: ");
+        Serial.println(zedSwitch.switchesStatus.switches.switches[i].pin);
         zedSwitch.switchesStatus.mosfets.push_back(zedSwitch.switchesStatus.switches.switches[i].pin);
         pinMode(zedSwitch.switchesStatus.mosfets[i], OUTPUT);
 
@@ -73,7 +69,9 @@ InitializationThisSensorStatus ZennoraThisSensor::begin() {
 
 
 
-    
+    Serial.println("===============================================================");
+    Serial.println("Initialization complete");
+    Serial.println("===============================================================");
 
 
     InitializationThisSensorStatus status;
@@ -82,20 +80,26 @@ InitializationThisSensorStatus ZennoraThisSensor::begin() {
 }
 
 bool ZennoraThisSensor::inaInit(){
-    //initialize the the ina219s
-    Wire.begin(6,7);
-    zedSwitch.switchesStatus.ina219ensors.push_back(Adafruit_INA219(0x40));
-    
+    // Initialize I2C with custom SDA/SCL pins
+    Wire.begin();
+    Serial.println("Wire initialized");
 
-        if(!zedSwitch.switchesStatus.ina219ensors[0].begin()){
+    // Set the INA260 I2C address (default 0x40, change if needed)
+    zedSwitch.switchesStatus.ina260sensors.push_back(INA260(0x40));
+
+    Serial.println("INA260 setup");
+    
+    if(!zedSwitch.switchesStatus.ina260sensors[0].begin()){
            Serial.println("Failed to initialize INA219");
 
 
+        }else{
+            Serial.println("INA260 initialized");
         }
-        delay(100);
-
+    
 
   
+    delay(100);
     return true;
 }
 
@@ -182,8 +186,8 @@ Switches ZennoraThisSensor::switchesInit()
 }
 
 void ZennoraThisSensor::uartPins(){
-    zedSwitch.switchesStatus.txPin = 16; //43 for Xiao ESP32 S3 and 21 for Xiao ESP32 C3
-    zedSwitch.switchesStatus.rxPin = 17; //44 for Xiao ESP32 S3 and 20 for Xiao ESP32 C3
+    zedSwitch.switchesStatus.txPin = 43; //16 for Xiao ESP32 C3, 43 for Xiao ESP32 S3 and 21 for Xiao ESP32 C6
+    zedSwitch.switchesStatus.rxPin = 44; //17 for Xiao ESP32 C3, 44 for Xiao ESP32 S3 and 20 for Xiao ESP32 C6
 }
 
 

@@ -50,9 +50,7 @@ void setup() {
 
 
   coreStatus = core.begin();
-   //init the led indicator
-  zedSwitch.ledIndicator();
-  zedSwitch.begin();
+
   
 
   //if the wifi is fully initialized, otherwise fo into AP mode.
@@ -70,6 +68,13 @@ void setup() {
       DeviceInfo restartInfo = sensor.sendRestartInfo();
       Serial.println("Sending restart info");
       mqtt.sendMessage(restartInfo.topic.c_str(), restartInfo.buffer, restartInfo.qos);
+         //init the led indicator
+      zedSwitch.ledIndicator();
+      zedSwitch.begin();
+      thisSensor.begin();
+
+
+      delay(5000);
     }
     //end restart block
     
@@ -80,15 +85,19 @@ void setup() {
       Serial.println("Sensor/Time initialization failed");
     }
     // Register the device-specific command handler.
-    thisSensor.begin();
+
     mqtt.setDeviceCommandHandler([](char* topic, byte* payload, unsigned int length) {
     thisSensor.handleDeviceCommand(topic, payload, length);
     });
 
     tickerStatus.attach_ms(config.loopSpeed, [](){
-        zedSwitch.sendStatus();
+          zedSwitch.sendStatus();
+          //Serial.println("Sending status");
       });
-     Serial.println("Initialization complete");
+    
+    
+    
+    Serial.println("Initialization complete");
   } else {
     Serial.println("Wifi mode Initialization failed, going into AP mode");
     
@@ -109,7 +118,7 @@ void loop() {
     core.serialListener();       // Listen for core commands
     
     //Serial.println("looping");
-    // reset the watchdog timer
+    //reset the watchdog timer
     /*
     static bool watchdog_added = false; // Flag to ensure we add the task only once
 
@@ -122,11 +131,12 @@ void loop() {
     unsigned long currentMillis = millis();
     //only try to do donkey work if the wifi is fully initialized.
     if (coreStatus.wifiInitialized && mqttStatus.subscriptionsApplied ){
+      //Serial.println("Wifi and MQTT initialized");
       mqtt.loop();
       if (currentMillis - previousMillis >= config.loopSpeed) {  // Adjustable loop speed
           previousMillis = currentMillis;
           //zedSwitch.toggleAll();
-          zedSwitch.sendSwitchPackages(mqtt);
+          zedSwitch.sendSwitchPackages260(mqtt);
 
 
 
@@ -139,14 +149,14 @@ void loop() {
           DeviceInfo info = sensor.sendDeviceStats();
           
           mqtt.sendMessage(info.topic.c_str(), info.buffer, info.qos);
-          zedSwitch.ledIndicator();
+          
     
           
           //sensor.monitorHeap();
       }
     }
       
-  delay(1);
+ 
     
 }
 
