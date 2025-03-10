@@ -69,9 +69,10 @@ void setup() {
       Serial.println("Sending restart info");
       mqtt.sendMessage(restartInfo.topic.c_str(), restartInfo.buffer, restartInfo.qos);
          //init the led indicator
-      zedSwitch.ledIndicator();
       zedSwitch.begin();
       thisSensor.begin();
+      zedSwitch.ledIndicator();
+      
 
 
       delay(5000);
@@ -117,17 +118,7 @@ void loop() {
     //Serial.println("Handling client done");
     core.serialListener();       // Listen for core commands
     
-    //Serial.println("looping");
-    //reset the watchdog timer
-    /*
-    static bool watchdog_added = false; // Flag to ensure we add the task only once
-
-    if (!watchdog_added) {
-      esp_task_wdt_add(NULL); // Add the current task (loop()) to the TWDT
-      watchdog_added = true;
-    }
-    esp_task_wdt_reset();
-    */
+    
     unsigned long currentMillis = millis();
     //only try to do donkey work if the wifi is fully initialized.
     if (coreStatus.wifiInitialized && mqttStatus.subscriptionsApplied ){
@@ -149,10 +140,8 @@ void loop() {
           DeviceInfo info = sensor.sendDeviceStats();
           
           mqtt.sendMessage(info.topic.c_str(), info.buffer, info.qos);
+          zedSwitch.ledIndicator();
           
-    
-          
-          //sensor.monitorHeap();
       }
     }
       

@@ -147,6 +147,8 @@ Switches ZennoraThisSensor::switchesInit()
         mosfetPins[3] = 4;
     }
 
+    std::string nameToUse[] = {"main", "engine monitor", "aft light", "victron monitor light"};
+
 
     /*
     
@@ -170,10 +172,12 @@ Switches ZennoraThisSensor::switchesInit()
    bool toggle = true;
    bool initState = false;
 
-    Switch aSwitch {0, "light", "main salon", false, toggle, initState, mosfetPins[0], 4 ,0x40, 0.0f, 0.0f, "STARTUP", 0, 1000, 12}; //unshorted
-    Switch aSwitch2 {1, "light", "port books shelf", false, toggle, initState, mosfetPins[1], 3, 0x44, 0.0f, 0.0f, "STARTUP", 0, 1000, 12}; //a1 short
-    Switch aSwitch3 {2, "light", "port books reading light", false, toggle, initState, mosfetPins[2], 2, 0x41, 0.0f, 0.0f, "STARTUP", 0, 1000, 12};  //a0 shorted
-    Switch aSwitch4 {3, "light", "starboard books shelf", false, toggle, initState,mosfetPins[3], 1, 0x45, 0.0f, 0.0f, "STARTUP", 0, 1000, 12}; //both shorted
+
+
+    Switch aSwitch {0, "light", nameToUse[0], false, toggle, initState, mosfetPins[0], 4 ,0x40, 0.0f, 0.0f, "STARTUP", 0, 1000, 12}; //unshorted
+    Switch aSwitch2 {1, "monitor", nameToUse[1], false, toggle, initState, mosfetPins[1], 5, 0x44, 0.0f, 0.0f, "STARTUP", 0, 1000, 12}; //a1 short
+    Switch aSwitch3 {2, "light", nameToUse[2], false, toggle, initState, mosfetPins[2], 6, 0x41, 0.0f, 0.0f, "STARTUP", 0, 1000, 12};  //a0 shorted
+    Switch aSwitch4 {3, "light", nameToUse[3], false, toggle, initState,mosfetPins[3], 7, 0x45, 0.0f, 0.0f, "STARTUP", 0, 1000, 12}; //both shorted
     switches.addSwitch(aSwitch);
     switches.addSwitch(aSwitch2);
     switches.addSwitch(aSwitch3);
