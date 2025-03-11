@@ -10,6 +10,7 @@ ZedSwitch zedSwitch;
 
 
 ZennoraThisSensor::ZennoraThisSensor(){
+
     commandMappings[0] = {"toggle-0", []() { toggleOne(0); }};
     commandMappings[1] = {"toggle-1", []() { toggleOne(1); }};
     commandMappings[2] = {"toggle-2", []() { toggleOne(2); }};
@@ -31,8 +32,9 @@ ZennoraThisSensor::ZennoraThisSensor(){
 
     commandMappings[13] = {"on-all", []() { onOffAll(HIGH); }};
     commandMappings[14] = {"off-all", []() { onOffAll(LOW); }};
+    
+    commandMappings[15] = {"json", [this]() { this->processLastJsonCommand(); }};
 
-   
     
   
 
@@ -253,6 +255,7 @@ void ZennoraThisSensor::toggleAll() {
 }
 
 
+
 void ZennoraThisSensor::toggleOne(int switchNumber) {
     Serial.println("toggle executed.");
     zedSwitch.toggle(switchNumber);
@@ -319,4 +322,47 @@ void ZennoraThisSensor::sendAck(std::string topic, std::string message) {
 
 
 }
+
+void ZennoraThisSensor::processIncomingMqttMessage(const std::string& jsonPayload) {
+    lastReceivedJson = jsonPayload;  // Store JSON inside the class
+    dim("json");          // Triggers processing
+}
+
+
+
+void ZennoraThisSensor::processLastJsonCommand() {
+    Serial.print("Processing JSON command: ");
+    Serial.println(lastReceivedJson.c_str());  // Convert std::string to C-style string
+
+    if (lastReceivedJson.empty()) {
+        Serial.println("No JSON command received.");
+        return;
+    }
+
+    DynamicJsonDocument doc(256);
+    DeserializationError error = deserializeJson(doc, lastReceivedJson);
+    if (error) {
+        Serial.println("JSON parsing failed.");
+        return;
+    }
+
+    std::string action = doc["action"].as<std::string>();
+    Serial.print("Extracted action: ");
+    Serial.println(action.c_str());  // Convert std::string to C-style string
+
+    if (action == "dim") {
+        int light = doc["target"].as<int>();
+        int brightness = doc["brightness"].as<int>();
+        int stepSize = doc["stepSize"].as<int>();
+
+        Serial.printf("Dim command recognized -> Light: %d, Brightness: %d, Step: %d\n", light, brightness, stepSize);
+        zedSwitch.dimmerSwitch(light, brightness, stepSize);
+    } else {
+        Serial.print("Unknown action received: ");
+        Serial.println(action.c_str());
+    }
+
+    lastReceivedJson.clear();
+}
+
 

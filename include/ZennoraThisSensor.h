@@ -100,5 +100,10 @@ private:
     // An array of command mappings.
     CommandMapping commandMappings[NUM_COMMANDS];
     void uartPins();
+    void dim(std::string dimValue);
+
+    std::string lastReceivedJson; 
+    void processIncomingMqttMessage(const std::string& jsonPayload);
+    void processLastJsonCommand() ;
 
 };
