@@ -81,7 +81,10 @@ void setup() {
     
 
     if (sensorStatus) {
+      thisSensor.onOffAll(LOW); // Turn off all switches as a default action
+      thisSensor.onOffAll(HIGH);//turn on all switches
       Serial.println("Sensor/Time initialization successful");
+      
     } else {
       Serial.println("Sensor/Time initialization failed");
     }
@@ -89,13 +92,16 @@ void setup() {
 
     mqtt.setDeviceCommandHandler([](char* topic, byte* payload, unsigned int length) {
     thisSensor.handleDeviceCommand(topic, payload, length);
+
+
+
     });
 
     tickerStatus.attach_ms(config.loopSpeed, [](){
-          zedSwitch.sendStatus();
+          zedSwitch.sendStatus260();
           //Serial.println("Sending status");
       });
-    
+    \
     
     
     Serial.println("Initialization complete");
