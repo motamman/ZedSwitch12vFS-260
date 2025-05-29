@@ -92,7 +92,7 @@ bool ZennoraThisSensor::inaInit(){
     Serial.println("INA260 setup");
     
     if(!zedSwitch.switchesStatus.ina260sensors[0].begin()){
-           Serial.println("Failed to initialize INA219");
+           Serial.println("Failed to initialize INA260");
 
 
         }else{
@@ -149,9 +149,21 @@ Switches ZennoraThisSensor::switchesInit()
         mosfetPins[3] = 4;
     }
 
+    //create an array of corresponding pin numbers for the LEDs, based on the LED board layout.
+    //first design was 4-7. Second design was 0-3
+
+    uint8_t correspondingPins[4];
+    
+    correspondingPins[0] = 4; 
+    correspondingPins[1] = 5; 
+    correspondingPins[2] = 6; 
+    correspondingPins[3] = 7; 
+
+
     std::string nameToUse[] = {"main", "engine monitor", "aft light", "victron monitor light"};
 
 
+    //NB mosfetPins, correspondingPins and nameToUse should be moved to a configfile at some point that can be changed via an html page.
     /*
     
             uint32_t id; //unique identifier for the switch
@@ -176,10 +188,12 @@ Switches ZennoraThisSensor::switchesInit()
 
 
 
-    Switch aSwitch {0, "light", nameToUse[0], false, toggle, initState, mosfetPins[0], 4 ,0x40, 0.0f, 0.0f, "STARTUP", 0, 1000, 12}; //unshorted
-    Switch aSwitch2 {1, "monitor", nameToUse[1], false, toggle, initState, mosfetPins[1], 5, 0x44, 0.0f, 0.0f, "STARTUP", 0, 1000, 12}; //a1 short
-    Switch aSwitch3 {2, "light", nameToUse[2], false, toggle, initState, mosfetPins[2], 6, 0x41, 0.0f, 0.0f, "STARTUP", 0, 1000, 12};  //a0 shorted
-    Switch aSwitch4 {3, "light", nameToUse[3], false, toggle, initState,mosfetPins[3], 7, 0x45, 0.0f, 0.0f, "STARTUP", 0, 1000, 12}; //both shorted
+    Switch aSwitch {0, "light", nameToUse[0], false, toggle, initState, mosfetPins[0],correspondingPins[0] ,0x40, 0.0f, 0.0f, "STARTUP", 0, 1000, 12}; //unshorted
+    Switch aSwitch2 {1, "monitor", nameToUse[1], false, toggle, initState, mosfetPins[1], correspondingPins[1], 0x44, 0.0f, 0.0f, "STARTUP", 0, 1000, 12}; //a1 short
+    Switch aSwitch3 {2, "light", nameToUse[2], false, toggle, initState, mosfetPins[2], correspondingPins[2], 0x41, 0.0f, 0.0f, "STARTUP", 0, 1000, 12};  //a0 shorted
+    Switch aSwitch4 {3, "light", nameToUse[3], false, toggle, initState,mosfetPins[3], correspondingPins[3], 0x45, 0.0f, 0.0f, "STARTUP", 0, 1000, 12}; //both shorted
+    
+    
     switches.addSwitch(aSwitch);
     switches.addSwitch(aSwitch2);
     switches.addSwitch(aSwitch3);
