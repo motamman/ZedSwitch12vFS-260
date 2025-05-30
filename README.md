@@ -28,3 +28,8 @@ PCF8574 PCF8574 IO Expansion Board X1
 Various LEDs x5
 INA260 x1. (The logic/code is set up so the system could be adapted for one on each circuit.)
 
+Version one design
+0=Orange
+1=Green
+2=Blue
+3=White
