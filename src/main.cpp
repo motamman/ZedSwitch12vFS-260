@@ -98,7 +98,7 @@ void setup() {
     });
 
     tickerStatus.attach_ms(config.loopSpeed, [](){
-          zedSwitch.sendStatus260();
+          //zedSwitch.sendStatus260();
           //Serial.println("Sending status");
       });
     \
@@ -134,6 +134,7 @@ void loop() {
           previousMillis = currentMillis;
           //zedSwitch.toggleAll();
           zedSwitch.sendSwitchPackages260(mqtt);
+          zedSwitch.sendStatus260();
 
 
 
